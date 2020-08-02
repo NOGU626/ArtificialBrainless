@@ -1,33 +1,44 @@
+from random import choice
+from responder import WhatResponder, RandomResponder, PatternResponder
+from dictionary import Dictionary
 
-from responder import RandomResponder
-  
+
 class Unmo:
-    """人工無能コアクラス。
-    
-    プロパティ：
+    """人工無脳コアクラス。
+
+    プロパティ:
     name -- 人工無脳コアの名前
     responder_name -- 現在の応答クラスの名前
     """
-    
-    def __init__(self,name):
+
+    def __init__(self, name):
         """文字列を受け取り、コアインスタンスの名前に設定する。
-        'What' Responderインスタンスを作成し、保持する
+        Responder(What, Random, Pattern)インスタンスを作成し、保持する。
+        Dictionaryインスタンスを作成し、保持する。
         """
+        self._dictionary = Dictionary()
+
+        self._responders = {
+            'what':   WhatResponder('What', self._dictionary),
+            'random': RandomResponder('Random', self._dictionary),
+            'pattern': PatternResponder('Pattern', self._dictionary),
+        }
         self._name = name
-        self._responder = RandomResponder('What')
-        
-    def dialogue(self,text):
-        """ユーザーからの入力を受け取り、Responderに処理させた結果を返す。"""
+        self._responder = self._responders['pattern']
+
+    def dialogue(self, text):
+        """ユーザーからの入力を受け取り、Responderに処理させた結果を返す。
+        呼び出されるたびにランダムでResponderを切り替える。"""
+        chosen_key = choice(list(self._responders.keys()))
+        self._responder = self._responders[chosen_key]
         return self._responder.response(text)
-    
+
     @property
     def name(self):
-        """人工無能インスタンスの名前"""
+        """人工無脳インスタンスの名前"""
         return self._name
-    
+
     @property
     def responder_name(self):
-        """保持しているRespondermの名前"""
+        """保持しているResponderの名前"""
         return self._responder.name
-
-    
